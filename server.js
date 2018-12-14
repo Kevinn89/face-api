@@ -8,19 +8,40 @@ const signin = require('./controllers/signin');
 const register = require('./controllers/register');
 const image = require('./controllers/image');
 const profile = require('./controllers/profile');
+const morgan = require('morgan');
 
+app.use(morgan('combined'))
 app.use(bodyParser.json());
 app.use(cors());
+console.log(process.env.POSTGRES_HOST);
+console.log(process.env.POSTGRES_USER);
+console.log(process.env.POSTGRES_PASSWORD);
+console.log(process.env.POSTGRES_DB);
+
+// const db = knex({
+//     client: 'pg',
+//     connection: {
+//         connectionString: process.env.DATABASE_URL,
+//         ssl:true
+//     }
+//   });
+
 
 
 const db = knex({
     client: 'pg',
     connection: {
-        connectionString: process.env.DATABASE_URL,
-        ssl:true
+      host: process.env.POSTGRES_HOST,
+      user: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB
     }
   });
 
+app.get('/',(req,res) => {
+  return res.json('working')
+}
+);
 app.post('/signin',(req,res) => {signin.handleSignin(req,res ,db ,bcrypt)})
 
 app.put('/image',(req,res) => {image.handleImage(req,res,db)})
